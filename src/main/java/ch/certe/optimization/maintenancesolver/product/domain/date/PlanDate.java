@@ -1,0 +1,54 @@
+/*
+ * Copyright 2017 JBoss by Red Hat.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package ch.certe.optimization.maintenancesolver.product.domain.date;
+
+import ch.certe.optimization.maintenancesolver.common.domain.AbstractPersistable;
+import java.time.LocalDate;
+import javax.xml.bind.annotation.XmlRootElement;
+
+/**
+ *
+ * @author nalet
+ */
+@XmlRootElement
+public class PlanDate extends AbstractPersistable{
+
+    private final LocalDate localDate;
+    private final int dayIndex;
+
+    public PlanDate(LocalDate localDate, int dayIndex, long id) {
+        super(id);
+        this.localDate = localDate;
+        this.dayIndex = dayIndex;
+    }
+
+    public LocalDate getLocalDate() {
+        return localDate;
+    }
+
+    public int getDayIndex() {
+        return dayIndex;
+    }
+
+    @Override
+    public String toString() {
+        //return "PlanDate{localDate: "+this.localDate.toString() + ", dayIndex: " + this.dayIndex +"}";
+        return "\"planDate\":{\"dayOfMonth\":\"" + this.localDate.getDayOfMonth() + "\",\"monthValue\":\"" + this.localDate.getMonthValue() + "\",\"year\":\"" + this.localDate.getYear() + "\"}";
+        
+    }
+
+    
+}

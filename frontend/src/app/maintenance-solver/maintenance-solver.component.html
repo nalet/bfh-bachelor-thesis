@@ -1,0 +1,30 @@
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+  <h1 class="h2">Maintenance Solver</h1>
+</div>
+
+<div class="btn-toolbar mb-2 mb-md-0">
+  <div class="btn-group mr-2">
+    <button class="btn btn-sm" (click)="startSolve()" [ngClass]="{'btn-primary': !solvingState, 'btn-secondary': solvingState}"
+      [disabled]="solvingState">Start Solve</button>
+    <button class="btn btn-sm" (click)="terminateEarly()" [ngClass]="{'btn-danger': solvingState, 'btn-secondary': !solvingState}"
+      [disabled]="!solvingState">Terminate early</button>
+    <button class="btn btn-sm" (click)="reset()">reset</button>
+  </div>
+</div>
+
+
+<div class="timespend">Solver is running: {{ status.solvingState }} Timespend: {{ status.timeSpend }} ms </div>
+
+<div class="maintenance-schedule">
+  <div class="maintenance-schedule-ma" *ngFor="let maintenanceObject of maintenanceSchedule.maintenanceObjects">
+    <div class="maintenance-schedule-ma-name">MaintenanceObject: {{ maintenanceObject.name }}</div>
+    <div class="maintenance-schedule-interval" *ngFor="let interval of maintenanceObject.intervals">
+      <div class="maintenance-schedule-interval-name">Interval: Year: {{ interval.period.years }} Months: {{ interval.period.months }} Days: {{ interval.period.days }}</div>
+      <div class="maintenance-schedule-task" *ngFor="let task of interval.tasks">
+        <div class="maintenance-schedule-task-name">{{ task.taskType }} - {{ task.planDate.dayOfMonth }}.{{ task.planDate.monthValue }}.{{ task.planDate.year }}</div>
+      </div>
+    </div>
+  </div>
+
+
+</div>

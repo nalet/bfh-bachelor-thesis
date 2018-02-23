@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<solver>
+    <!--<environmentMode>FAST_ASSERT</environmentMode>-->
+
+    <!-- Domain model configuration -->   
+    <solutionClass>ch.certe.optimization.maintenancesolver.product.domain.MaintenanceScheduleTask</solutionClass>
+    <entityClass>ch.certe.optimization.maintenancesolver.product.domain.EmployeeTaskAssignment</entityClass>
+
+    <!-- Score configuration -->
+    <scoreDirectorFactory>
+        <scoreDrl>ch/certe/optimization/maintenancesolver/product/solver/maintenanceScheduleTaskScoreRules.drl</scoreDrl>
+        <!--<initializingScoreTrend>ONLY_DOWN</initializingScoreTrend>-->
+    </scoreDirectorFactory>
+
+    <termination>
+        <bestScoreLimit>0hard/0soft</bestScoreLimit>
+        <secondsSpentLimit>100</secondsSpentLimit>
+    </termination>
+    <constructionHeuristic>
+        <constructionHeuristicType>FIRST_FIT</constructionHeuristicType>
+    </constructionHeuristic>
+    <localSearch>
+        <changeMoveSelector>
+            <selectionOrder>ORIGINAL</selectionOrder>
+        </changeMoveSelector>
+        <acceptor>
+            <entityTabuSize>5</entityTabuSize>
+        </acceptor>
+        <forager>
+        </forager>
+    </localSearch>
+</solver>

@@ -1,0 +1,145 @@
+/*
+ * Copyright 2010 Red Hat, Inc. and/or its affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package ch.certe.optimization.maintenancesolver.product.solver;
+    dialect "java"
+
+import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScoreHolder;
+
+import ch.certe.optimization.maintenancesolver.product.domain.MaintenanceSchedule;
+import ch.certe.optimization.maintenancesolver.product.domain.Task;
+import ch.certe.optimization.maintenancesolver.product.domain.pattern.ConflictPattern;
+
+global HardSoftScoreHolder scoreHolder;
+
+// ############################################################################
+// Hard constraints
+// ############################################################################
+
+
+rule "TaskHaveADate"
+    when
+        Task( planDate == null )
+    then
+        scoreHolder.addHardConstraintMatch(kcontext, -1);
+end
+
+rule "TaskOneTaskADay"
+    when
+        $taskLeft : Task( $maintenanceObject: maintenanceObject, $interval: interval, $planDate: planDate )
+        Task( maintenanceObject == $maintenanceObject, interval == $interval, planDate == $planDate, this != $taskLeft )
+    then
+        scoreHolder.addHardConstraintMatch(kcontext, -1);
+end
+
+rule "TaskInIntervalMin"
+    when
+        $leftTask : Task($interval : interval, planDate != null)
+        $rightTask : Task(interval == $interval, this != $leftTask, planDate != null, getDist($leftTask) < getMinDist())
+    then
+        scoreHolder.addSoftConstraintMatch(kcontext, - Math.abs($rightTask.getDist($leftTask) - $rightTask.getMinDist()));
+end
+
+rule "TaskInIntervalMax"
+    when
+        $leftTask : Task($interval : interval, planDate != null, $planDateLeft : planDate)
+        $rightTask : Task(interval == $interval, this != $leftTask, planDate != null, $planDateLeft.getDayIndex() > planDate.getDayIndex(), getDist($leftTask) > getMaxDist(), isNext($leftTask) == true)
+    then
+        scoreHolder.addSoftConstraintMatch(kcontext, - Math.abs($rightTask.getDist($leftTask) - $rightTask.getMaxDist()));
+end
+
+rule "TaskSameDay"
+    when
+        $task : Task(planDate != null, $planDate : planDate)
+        accumulate(
+            $assignment : Task(this != $task, planDate != null, planDate == $planDate);
+            $totalAssignments : count($assignment);
+            $totalAssignments > 1
+        )
+    then
+        scoreHolder.addSoftConstraintMatch(kcontext, - $totalAssignments.intValue());
+end
+
+/*
+rule "TaskInIntervalMaxOne"
+    when
+        $leftTask : Task($interval : interval, planDate != null)
+        $rightTask : Task(interval == $interval, this != $leftTask, planDate != null, getDist($leftTask) > getMaxDist(), isNearest($leftTask) == true)
+    then
+        System.out.println(Math.abs($rightTask.getDist($leftTask) - $rightTask.getMaxDist()));
+        scoreHolder.addHardConstraintMatch(kcontext, - Math.abs($rightTask.getDist($leftTask) - $rightTask.getMaxDist()));
+end
+*/
+/*
+rule "TaskInIntervalMin"
+    when
+        $leftTask : Task($interval : interval, planDate != null, $nextMin : nextMin())
+        $rightTask : Task(interval == $interval, this != $leftTask, planDate != null, planDate.getDayIndex() < $nextMin)
+    then
+    System.out.println($nextMin +" - "+ $rightTask.getPlanDate().getDayIndex() +" "+ ($nextMin - $rightTask.getPlanDate().getDayIndex()));
+    scoreHolder.addHardConstraintMatch(kcontext, - ($nextMin - $rightTask.getPlanDate().getDayIndex()));
+end
+*/
+/*
+
+*/
+
+
+
+/*
+rule "TaskNextNotEarly"
+    when
+        $task0: Task( $id: id,
+                      $maintenanceObject: maintenanceObject,
+                      $interval: interval, 
+                      $planDate0: planDate )
+                      
+        $task1: Task( $id != id,
+                      maintenanceObject == $maintenanceObject,
+                      $interval == interval,
+                      taskIsConsecutive($task0) == true,
+                      
+                      planDate.getDayIndex() + $interval.intervalToDays() * 0.8 > $task0.planDate.getDayIndex()
+
+        )
+        
+        
+    then
+        scoreHolder.addHardConstraintMatch(kcontext, -1); 
+end
+
+
+
+rule "TaskNextNotLate"
+    when
+        $task0: Task( $id: id,
+                      $maintenanceObject: maintenanceObject,
+                      $interval: interval, 
+                      $planDate0: planDate )
+                      
+        $task1: Task( $id != id,
+                      maintenanceObject == $maintenanceObject,
+                      $interval == interval,
+                      taskIsConsecutive($task0) == true,
+                      
+                      planDate.getDayIndex() + $interval.intervalToDays() < $task0.planDate.getDayIndex()
+        )
+        
+        
+    then
+        scoreHolder.addHardConstraintMatch(kcontext, -1); 
+end
+*/

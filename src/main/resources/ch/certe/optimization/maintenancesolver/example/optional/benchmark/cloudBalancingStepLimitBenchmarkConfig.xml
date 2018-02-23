@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plannerBenchmark>
+  <benchmarkDirectory>local/data/cloudbalancing/stepLimit</benchmarkDirectory>
+  <warmUpSecondsSpentLimit>0</warmUpSecondsSpentLimit>
+
+  <inheritedSolverBenchmark>
+    <problemBenchmarks>
+      <xStreamAnnotatedClass>ch.certe.optimization.maintenancesolver.example.domain.CloudBalance</xStreamAnnotatedClass>
+      <inputSolutionFile>data/cloudbalancing/unsolved/100computers-300processes.xml</inputSolutionFile>
+    </problemBenchmarks>
+
+    <solver>
+      <solutionClass>ch.certe.optimization.maintenancesolver.example.domain.CloudBalance</solutionClass>
+      <entityClass>ch.certe.optimization.maintenancesolver.example.domain.CloudProcess</entityClass>
+      <scoreDirectorFactory>
+        <scoreDrl>ch/certe/optimization/maintenancesolver/example/solver/cloudBalancingScoreRules.drl</scoreDrl>
+        <initializingScoreTrend>ONLY_DOWN/ONLY_DOWN</initializingScoreTrend>
+      </scoreDirectorFactory>
+    </solver>
+  </inheritedSolverBenchmark>
+
+  <solverBenchmark>
+    <solver>
+      <constructionHeuristic>
+        <constructionHeuristicType>FIRST_FIT_DECREASING</constructionHeuristicType>
+      </constructionHeuristic>
+      <localSearch>
+        <termination>
+          <stepCountLimit>1000</stepCountLimit>
+        </termination>
+        <unionMoveSelector>
+          <changeMoveSelector/>
+          <swapMoveSelector/>
+          <pillarChangeMoveSelector/>
+          <pillarSwapMoveSelector/>
+        </unionMoveSelector>
+        <acceptor>
+          <entityTabuSize>7</entityTabuSize>
+        </acceptor>
+        <forager>
+          <acceptedCountLimit>1000</acceptedCountLimit>
+        </forager>
+      </localSearch>
+    </solver>
+  </solverBenchmark>
+</plannerBenchmark>
